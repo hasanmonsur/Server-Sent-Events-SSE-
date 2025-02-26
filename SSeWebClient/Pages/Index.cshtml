@@ -1,0 +1,30 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+<h1>Real-Time Updates with Server-Sent Events (SSE)</h1>
+<div id="updates" style="margin-top: 20px; font-family: Arial, sans-serif;"></div>
+
+<script>
+        const eventSource = new EventSource(' http://localhost:5080/api/sse/updates');
+
+    eventSource.onmessage = function (event) {
+        const updatesDiv = document.getElementById('updates');
+        if (event.data === '[END]') {
+            updatesDiv.innerHTML += '<p>Stream ended.</p>';
+            eventSource.close();
+        } else {
+            updatesDiv.innerHTML += `<p>${event.data}</p>`;
+        }
+    };
+
+    eventSource.onerror = function () {
+        const updatesDiv = document.getElementById('updates');
+        updatesDiv.innerHTML += '<p>Stream error. Closing connection.</p>';
+        eventSource.close();
+    };
+</script>
+</div>
